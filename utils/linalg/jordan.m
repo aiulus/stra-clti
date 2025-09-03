@@ -1,4 +1,4 @@
-function J = Jordan(eigvals)
+function J = jordan(eigvals)
 % Constructs real Jordan blocks from a list of eigenvalues
     eigv = eigvals(:);
     eigv = unique([eigv; conj(eigv)], 'stable'); % ensure conjugate closure

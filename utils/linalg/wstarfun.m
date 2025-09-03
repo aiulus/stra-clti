@@ -1,0 +1,33 @@
+function val = wstarfun(Y, S, L)
+%WSTARFUN Approximation of MSE(A) from discrete data (w* statistic).
+%   Implements the R expression using MATLAB algebra.
+%
+%   Shapes:
+%     Y: d x n
+%     S,L: n x n
+
+[d,~] = size(Y);
+N  = rsolve(Y*S*Y.');    % robust inverse
+A  = Y*L*Y.' * N;
+N2 = N*N;
+tAA = A.'*A;
+
+% Build the large matrix inside the vectorized inner product with N2
+M  = ((Y*L*L).'*Y.') ...
+   + d*(((Y*L)).'*L*Y.') ...
+   + (Y*(L*L).'*Y.') ...
+   - 2*(A*Y*S*L*Y.') ...
+   - 2*trace(A)*(Y*S.'*L*Y.') ...
+   - 2*(Y*S.'*L.'*Y.'*A) ...
+   + (tAA*Y*S*S*Y.') ...
+   + trace(tAA)*(((Y*S)).'*S*Y.') ...
+   + (((Y*S).')*S*Y.'*tAA);
+
+Term1 = sum(sum(N2 .* M));
+
+Term2 = trace( (Y*L).'*(Y*L) ...
+             - 2*(S.'*Y.'*A.'*Y*L) ...
+             + (A*Y*S).'*(A*Y*S) ) * trace(N2);
+
+val = Term1 + Term2;
+end
